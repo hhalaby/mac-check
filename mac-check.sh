@@ -143,7 +143,7 @@ if [[ "$PROF" == '__error__' ]]; then
 elif printf '%s' "$PROF" | grep -qi 'no configuration profiles'; then
   pass "Config profiles: None installed"
 else
-  PC=$(printf '%s' "$PROF" | grep -c 'profileIdentifier' 2>/dev/null || echo '?')
+  PC=$(printf '%s' "$PROF" | grep -c 'profileIdentifier' 2>/dev/null || :)
   warn "Config profiles: ${BOLD}$PC${NC} installed  — review what they restrict"
 fi
 
@@ -153,7 +153,7 @@ fi
 section "4 · Activation Lock & iCloud"
 
 # Find My token in NVRAM (most reliable CLI indicator)
-FMM=$(nvram -p 2>/dev/null | grep -c 'fmm-mobileme-token' 2>/dev/null)
+FMM=$(nvram -p 2>/dev/null | grep -c 'fmm-mobileme-token' 2>/dev/null || :)
 if [[ "$FMM" -gt 0 ]]; then
   fail "Find My Mac NVRAM token detected  — Activation Lock is active"
   note "Ask seller: Settings → [their name] → Find My → Find My Mac → turn off"
@@ -273,7 +273,7 @@ section "8 · User Accounts"
 
 USERS=$(dscl . list /Users 2>/dev/null \
   | grep -vE '^_|^daemon$|^nobody$|^root$|^Guest$|^com\.' || true)
-UC=$(printf '%s\n' "$USERS" | grep -c '[[:alnum:]]' 2>/dev/null || echo 0)
+UC=$(printf '%s\n' "$USERS" | grep -c '[[:alnum:]]' 2>/dev/null || :)
 
 if   (( UC == 0 )); then pass "No leftover user accounts"
 elif (( UC == 1 )); then info "User accounts: 1  ($USERS)"
@@ -322,7 +322,7 @@ BT=$(  system_profiler SPBluetoothDataType 2>/dev/null | awk -F':[[:space:]]+' '
 [[ -n "$WIFI" ]] && info "Wi-Fi:      802.11 $WIFI" || info "Wi-Fi:      not detected"
 [[ -n "$BT"   ]] && info "Bluetooth:  present (stack v$BT)" || info "Bluetooth:  not detected"
 
-TB_DEVS=$(system_profiler SPThunderboltDataType 2>/dev/null | grep -c 'Vendor ID' || echo 0)
+TB_DEVS=$(system_profiler SPThunderboltDataType 2>/dev/null | grep -c 'Vendor ID' || :)
 [[ "$TB_DEVS" -gt 0 ]] && info "Thunderbolt bus endpoints detected: $TB_DEVS"
 
 # ════════════════════════════════════════════════════════════════
